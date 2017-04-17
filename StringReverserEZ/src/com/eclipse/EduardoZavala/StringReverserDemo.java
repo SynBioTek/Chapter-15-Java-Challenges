@@ -15,7 +15,7 @@ public class StringReverserDemo {
 		// Instance of Scanner Class
 		Scanner keyboard = new Scanner(System.in);
 
-		// Print instructions for user
+		// Print instructions
 		System.out.print("Enter a string of letters and I'll reverse the order");
 
 		// Get user input
