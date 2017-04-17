@@ -16,7 +16,7 @@ public class StringReverserDemo {
 		Scanner keyboard = new Scanner(System.in);
 
 		// Print instructions for user
-		System.out.print("Enter a string of characters and I'll reverse the order");
+		System.out.print("Enter a string of letters and I'll reverse the order");
 
 		// Get user input
 		String input = keyboard.nextLine();
@@ -24,7 +24,6 @@ public class StringReverserDemo {
 		// Call toReverse method passing string input along with the length -1
 		String reversedString = toReverse(input, input.length() - 1);
 
-		System.out.print("length is:" + input.length());
 		// Display output
 		System.out.print("Your string is: " + reversedString);
 
