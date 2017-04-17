@@ -32,7 +32,7 @@ public class StringReverserDemo {
 
 	}
 
-	// Recursive method to reverse the order of the input string.
+	// Recursive method to reverse the order of input string.
 	static String toReverse(String string, int index) {
 		if (index == 0) {
 			return string.charAt(0) + ""; // Base case
