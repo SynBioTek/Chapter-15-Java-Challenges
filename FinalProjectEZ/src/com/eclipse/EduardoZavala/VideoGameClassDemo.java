@@ -3,60 +3,67 @@
  */
 package com.eclipse.EduardoZavala;
 
-import java.awt.Font;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Locale;
-
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class VideoGameClassDemo extends Application {
 
-    private Stage stage;
-    private DatePicker releaseDate;
-    private DatePicker today;
+    // Instance of VideoGameClassEZ 
+    static VideoGameClassEZ userGame = new VideoGameClassEZ();
+    
+    private Stage stage; // Javafx stage
+    private DatePicker releaseDate; // user selected release date
+    private DatePicker today; // today's date used to compare releaseDate
 
     public static void main(String[] args) {
-
-	Locale.setDefault(Locale.US);
+	
+	// Specifying locale for time objects 
+	Locale.setDefault(Locale.US); 
 	launch(args);
 	
+	String[] gameTitles = userGame.getTitle(); //
+	int[] days = userGame.getDays();
+	double tradeVals[] = userGame.getTradeIn();
+	
+	System.out.printf("%-15s %-20s %-15s\n", "Game Title", "Days Since Release","Trade-in Value");
+	System.out.println("------------    ------------------   --------------");
+	// for loop to display data
+	for (int i =0; i< gameTitles.length; i++)
+	{
+	 System.out.printf("%-20s %-15s $%.2f\n", gameTitles[i],  days[i],  tradeVals[i]);
+	 
+	}
+	System.out.printf("\n");
+	
+	double total = userGame.calcTotal();
+	System.out.print("Total trade-in Value: ");
+	System.out.printf("$%.2f", total);
+	
     }
-
+  
     @Override
     public void start(Stage stage) throws Exception
 
     {
 	this.stage = stage;
 	stage.setTitle("Game_Trade Calculator");
-	showElements();
+	showWindow();
 	stage.show();
 	
-	
-
     }
-
-    public void showElements() {
-	
-	// Instance of VideoGameClassEZ class.
-	VideoGameClassEZ userGame = new VideoGameClassEZ();
+    
+    public void showWindow()  {
 	
 	// Create DatePicker objects
 	releaseDate = new DatePicker();
@@ -65,15 +72,17 @@ public class VideoGameClassDemo extends Application {
 	// Set current date
 	today.setValue(LocalDate.now());
 
-	// Labels
-	Label instructions = new Label("Instructions: \n" 
-		+ "1) Enter info in order especified \n"
-		+ "2) Push enter after input \n"
-		+ "3) Valid input will turn field green \n"
-		+ "4) Onced entered, you cannot edit input" );
+	// Labels and instructions
+	Label instructions = new Label("Instructions:\n" 
+		+ "1) Enter info from top down\n"
+		+ "2) Push enter after input\n"
+		+ "NOTE: Valid input will turn field green.\n"
+		+ "Onced entered, you cannot edit input.\n"
+		+ "Output will be in eclipse console.");
+	
 	Label gameName = new Label("Name of Your Game");
 	Label oGprice = new Label("Enter Original Price (whole number)");
-	Label gameRating = new Label("Enter Rating (1-10) ");
+	Label gameRating = new Label("Enter Rating (0-10) ");
 	Label releaseDatelabel = new Label("Release Date: (select a date)");
 
 	// GridPane object and vertical space between elements
@@ -97,16 +106,13 @@ public class VideoGameClassDemo extends Application {
 	//instructions.setStyle("-fx-font-size:  1.5em;");
 	//instructions.setAlignment(Pos.CENTER_LEFT);
 	
-	    
-	
-	
 	
 	// Adjust the size of the Text fields
 	inputPrice.setPrefColumnCount(5);
 	userRatingF.setPrefColumnCount(5);
 
 	ToggleButton toggleButton1 = new ToggleButton("Calculate Trade In");
-	ToggleButton restartButton = new ToggleButton("Restart");
+	
 
 	// Add text fields and calendar to gridPane
 	gridPane.add(userGameF, 0, 2);
@@ -114,7 +120,7 @@ public class VideoGameClassDemo extends Application {
 	gridPane.add(releaseDate, 0, 6);
 	gridPane.add(userRatingF, 0, 8);
 	gridPane.add(toggleButton1, 0, 9);
-	gridPane.add(restartButton, 0,10);
+	
 	
 	// Specify column widths
 	//gridPane.getColumnConstraints().add(new ColumnConstraints(100)); 
@@ -148,82 +154,86 @@ public class VideoGameClassDemo extends Application {
 	releaseDate.setDayCellFactory(dayCellFactory);
 	// releaseDate.setValue(LocalDate.now());
 	
-	
-	 // Nested Event handlers to insure user enters information in a specific order
-	 userGameF.setOnAction(event1 -> {
+	// Nested Event handlers to insure user enters information in a specific order
+		 userGameF.setOnAction(event1 -> {
 
-	     // Obtain input as a String
-	     String inputText = userGameF.getText();
-	     
-	     // Change button color to green after user has acceptable input
-	     userGameF.setStyle("-fx-background-color: #00ff00; ");
-	     
-	     // Prevent user from changing input once entered 
-	     userGameF.setEditable(false);
-	     
-	     // Pass game title to setTitle method
-	     userGame.setTitle(inputText);
-
-	 });
-	 
-	 // Event handler for inputPrice
-	 inputPrice.setOnAction(event2 -> {
-
-	     	// Obtain input as a String from text field
-	     	String inputPriceStr = inputPrice.getText();
-
-	     	// Parse String input
-	     	int limit = Integer.parseInt(inputPriceStr);
-	     	
-	     	// Validate user input allowing only numbers and limit input to 999
-	     	if (inputPriceStr.matches("[0-9]*") && limit <=999 ) {
-	     	
-	     	// Parse String input
-		int price = Integer.parseInt(inputPriceStr);
-		
-		// Change button color to green after user has acceptable input
-		 inputPrice.setStyle("-fx-background-color: #00ff00; ");
-		 
-		// Prevent user from changing input once entered 
-		 inputPrice.setEditable(false);
-		 
-		 // Pass the price of original game to setGamePrice method
-		 userGame.setGamePrice(price);
-		 
-	// Event handler for the Date
-	 releaseDate.setOnAction(event3 -> {
+		     // Obtain input as a String
+		     String inputText = userGameF.getText();
 		     
-	     	// Change button color to green after user selects a date
-	     	releaseDate.setStyle("-fx-background-color: #00ff00; ");  
-	     	
-	     	// Pass the user selected date to the setReleaseDate method
-	     	userGame.setReleaseDate(releaseDate.getValue());
-		 
-	// Event handler on user input rating
-	userRatingF.setOnAction(event4 -> {
+		     // Change button color to green after user has acceptable input
+		     userGameF.setStyle("-fx-background-color: #00ff00; ");
+		     
+		     // Prevent user from changing input once entered 
+		     userGameF.setEditable(false);
+		     
+		     // Pass game title to setTitle method
+		     userGame.setTitle(inputText);
+		  
+	// Event handler for inputPrice
+		 inputPrice.setOnAction(event2 -> {
+		     
+		     	// Obtain input as a String from text field
+		     	String inputPriceStr = inputPrice.getText();
+		     	
+		     	// Get length of the String to compare with max length
+		     	int length = inputPrice.getText().length();
+		     	
+		     	final int MAX = 10; // limit number of characters
+		     	
+		     	// Validate user input allowing only numbers and limit input size
+		     	if (inputPriceStr.matches("[0-9]*") && length < MAX ) {
+		     	
+		     	// Parse String input
+			int price = Integer.parseInt(inputPriceStr);
+			
+			// Change button color to green after user has acceptable input
+			 inputPrice.setStyle("-fx-background-color: #00ff00; ");
+			 
+			// Prevent user from changing input once entered 
+			 inputPrice.setEditable(false);
+			 
+			 // Pass the price of original game to setGamePrice method
+			 userGame.setGamePrice(price);
+			 
+		// Event handler for the Date
+		 releaseDate.setOnAction(event3 -> {
+			     
+		     	// Change button color to green after user selects a date
+		     	releaseDate.setStyle("-fx-background-color: #00ff00; ");  
+		     	
+		     	// Pass the user selected date to the setReleaseDate method
+		     	userGame.setReleaseDate(releaseDate.getValue());
+			 
+		// Event handler on user input rating
+		userRatingF.setOnAction(event4 -> {
 
-		 // Obtain input as a String from text field
-		String inputRatingField = userRatingF.getText();
+			 // Obtain input as a String from text field
+			String inputRatingField = userRatingF.getText();
 
-		// Validate user input allowing only number from 0-10
-		if (inputRatingField.matches("[0-9]?|10")) {
-		    
-		// Parse String input
-		int number = Integer.parseInt(inputRatingField);
-			 	    
-		// Change button color to green after user has acceptable input
-		 userRatingF.setStyle("-fx-background-color: #00ff00; "); 
+			// Validate user input allowing only number from 0-10
+			if (inputRatingField.matches("[0-9]?|10")) {
+			    
+			// Parse String input
+			int number = Integer.parseInt(inputRatingField);
+				 	    
+			// Change button color to green after user has acceptable input
+			 userRatingF.setStyle("-fx-background-color: #00ff00; "); 
+			 
+			// Prevent user from changing input once entered
+			 userRatingF.setEditable(false);
+			
+			// Pass the rating as an integer 
+			 userGame.setGameRating(number);
+			
+			// ToggleButton to calculate the trade_in value from user input 
+			toggleButton1.setOnAction(a -> { 
+			userGame.calGamePrice();
+			
+			stage.close();
+			});}}); });}}); });
+	 
 		 
-		// Prevent user from changing input once entered
-		 userRatingF.setEditable(false);
-		
-		// Pass the rating as an integer 
-		 userGame.setGameRating(number);
-		
-		// ToggleButton to calculate the trade_in value from user input 
-		toggleButton1.setOnAction(a -> { 
-		userGame.calGamePrice();
-		});}}); });}});
+	 
 	
     }
     
